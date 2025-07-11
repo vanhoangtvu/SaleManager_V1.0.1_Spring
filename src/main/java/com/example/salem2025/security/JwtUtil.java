@@ -24,9 +24,6 @@ public class JwtUtil {
     }
 
     public String generateToken(String username, String role) {
-        System.out.println("JWT Secret length: " + SECRET_KEY.length());
-        System.out.println("JWT Secret preview: " + SECRET_KEY.substring(0, Math.min(20, SECRET_KEY.length())) + "...");
-        
         return Jwts.builder()
                 .subject(username)
                 .claim("role", role)
@@ -45,7 +42,6 @@ public class JwtUtil {
                     .getPayload()
                     .getSubject();
         } catch (Exception e) {
-            System.out.println("Error extracting username: " + e.getMessage());
             return null;
         }
     }
@@ -59,7 +55,6 @@ public class JwtUtil {
                     .getPayload()
                     .get("role", String.class);
         } catch (Exception e) {
-            System.out.println("Error extracting role: " + e.getMessage());
             return null;
         }
     }
@@ -70,10 +65,8 @@ public class JwtUtil {
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
-            System.out.println("Token validation successful");
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("Token validation failed: " + e.getMessage());
             return false;
         }
     }

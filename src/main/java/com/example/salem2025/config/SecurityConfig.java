@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -28,28 +33,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("=== Security Config Loading ===");
         http
-                .csrf(csrf -> {
-                    csrf.disable();
-                    System.out.println("CSRF disabled");
-                })
-                .cors(cors -> {
-                    cors.disable();
-                    System.out.println("CORS disabled");
-                })
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    System.out.println("Setting up authorization rules...");
                     auth
                         // Public endpoints (Spring Security sees paths without context-path)
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        
-                        // Public home endpoint
-                        .requestMatchers("/v1/home/**").permitAll()
                         
                         // Public product viewing endpoints  
                         .requestMatchers("/v1/products/view/**").permitAll()
@@ -70,7 +64,6 @@ public class SecurityConfig {
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        System.out.println("=== Security Config Loaded ===");
         return http.build();
     }
 
@@ -78,5 +71,28 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Cho phép tất cả origins (development only)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        
+        // Cho phép các HTTP methods
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        
+        // Cho phép tất cả headers
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Cho phép credentials (cookies, auth headers)
+        configuration.setAllowCredentials(true);
+        
+        // Áp dụng cho tất cả đường dẫn
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        
+        return source;
     }
 }
