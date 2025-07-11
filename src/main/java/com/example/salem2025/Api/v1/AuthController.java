@@ -47,7 +47,6 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         
         try {
-            // Kiểm tra các trường bắt buộc
             if (username == null || username.trim().isEmpty()) {
                 response.put("status", "error");
                 response.put("message", "Username không được để trống");
@@ -66,14 +65,12 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Kiểm tra username đã tồn tại chưa
             if (userAccountService.getByUsername(username) != null) {
                 response.put("status", "error");
                 response.put("message", "Username already exists");
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Tạo tài khoản mới với role mặc định USER
             UserAccountEntity newUser = new UserAccountEntity();
             newUser.setUsername(username);
             newUser.setPassword(passwordEncoder.encode(password));
@@ -117,7 +114,6 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
 
         try {
-            // Kiểm tra input
             if (username == null || username.trim().isEmpty()) {
                 response.put("status", "error");
                 response.put("message", "Username không được để trống");
@@ -130,11 +126,9 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
             
-            // Tìm user
             UserAccountEntity user = userAccountService.getByUsername(username.trim());
             
             if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-                // Generate JWT token
                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                 
                 response.put("status", "success");
