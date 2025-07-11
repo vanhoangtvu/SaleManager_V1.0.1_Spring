@@ -1,4 +1,4 @@
-package com.example.salem2025.security;
+package com.example.salem2025.service.impl;
 
 import com.example.salem2025.repository.entity.UserAccountEntity;
 import com.example.salem2025.repository.UserAccountRepository;

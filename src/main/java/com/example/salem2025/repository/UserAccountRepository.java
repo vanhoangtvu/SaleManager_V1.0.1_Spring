@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface UserAccountRepository extends JpaRepository<UserAccountEntity, Long> {
     Optional<UserAccountEntity> findByUsername(String username);
+    long countByRole(String role);
 }

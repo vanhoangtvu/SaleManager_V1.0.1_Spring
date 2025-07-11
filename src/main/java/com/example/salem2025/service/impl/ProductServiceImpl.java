@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl extends ProductService {
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -32,5 +32,35 @@ public class ProductServiceImpl extends ProductService {
         ProductEntity entity = modelMapper.map(dto, ProductEntity.class);
         entity = productRepository.save(entity);
         return modelMapper.map(entity, ProductDTO.class);
+    }
+
+    @Override
+    public ProductDTO createProduct(ProductDTO dto) {
+        return saveProduct(dto);
+    }
+
+    @Override
+    public ProductDTO getById(Long id) {
+        ProductEntity entity = productRepository.findById(id).orElse(null);
+        return entity != null ? modelMapper.map(entity, ProductDTO.class) : null;
+    }
+
+    @Override
+    public ProductDTO update(Long id, ProductDTO dto) {
+        ProductEntity existing = productRepository.findById(id).orElse(null);
+        if (existing == null) return null;
+
+        // Update fields
+        existing.setName(dto.getName());
+        existing.setPrice(dto.getPrice());
+        existing.setQuantity(dto.getQuantity());
+        existing.setDescription(dto.getDescription());
+
+        return modelMapper.map(productRepository.save(existing), ProductDTO.class);
+    }
+
+    @Override
+    public void delete(Long id) {
+        productRepository.deleteById(id);
     }
 }
