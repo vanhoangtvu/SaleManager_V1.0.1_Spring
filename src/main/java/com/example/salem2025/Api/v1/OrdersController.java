@@ -31,9 +31,6 @@ public class OrdersController {
 
     @Autowired
     private UserAccountService userAccountService;
-
-    // === USER ORDER ENDPOINTS ===
-
     @GetMapping("/my")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -75,7 +72,6 @@ public class OrdersController {
             return ResponseEntity.notFound().build();
         }
         
-        // Check if user can access this order (users can only see their own orders)
         if (!ordersService.canUserAccessOrder(id, user, role)) {
             return ResponseEntity.status(403).build();
         }

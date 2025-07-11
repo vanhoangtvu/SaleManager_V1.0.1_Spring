@@ -28,7 +28,6 @@ public class ProductController {
         System.out.println("=== CREATE PRODUCT CONTROLLER CALLED ===");
         System.out.println("DTO received: " + dto.getName());
         
-        // BỎ QUA ID để tránh lỗi Hibernate
         dto.setId(null);
         
         ProductDTO result = productService.createProduct(dto);
