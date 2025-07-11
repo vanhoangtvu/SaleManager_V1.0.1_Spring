@@ -21,5 +21,5 @@ RUN mvn clean package -DskipTests -B
 # Expose port
 EXPOSE 8081
 
-# Run the jar file
-CMD ["java", "-jar", "target/SaleM-2025-0.0.1-SNAPSHOT.jar"]
+# Run the jar file (tự động tìm file JAR)
+CMD ["sh", "-c", "java -jar target/*.jar"]
